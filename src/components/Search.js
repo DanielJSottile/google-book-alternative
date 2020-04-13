@@ -9,42 +9,8 @@ export class Search extends Component {
 			const printType = e.target.printType.value;
 			const filter = e.target.filter.value;
 
-			
-
-			function makeQuery(term, printType, filter) {
-				const baseURL = 'https://www.googleapis.com/books/v1/volumes';
-
-				term = term ? `?q=${term}`: '';
-				filter = filter ? `&filter=${filter}`: '';
-				printType = printType ? `&printType=${printType}`: '';
-
-				return `${baseURL}${term}${filter}${printType}`;
-			}
-
-			let error;
-
-			fetch(makeQuery(term, printType, filter))
-				.then((res) => {
-					if (!res.ok) {
-						error = res.status
-					}
-					return res.json();
-				})
-				.then((data) => {
-					if (error) {
-						error.message = data.message;
-						return Promise.reject(error);
-					}
-					if (data.totalItems > 0) {
-						this.props.updateBooks(data.items);
-					} else {
-						error = "No Items Found";
-						return Promise.reject(error);
-					}
-				})
-				.catch((err) => {
-					this.props.updateError(err);
-				})
+			const query = this.props.makeQuery(term, printType, filter)
+			this.props.apiFetch(query);
 		};
 
 		return (
